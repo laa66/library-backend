@@ -1,0 +1,40 @@
+@startuml library_backend
+
+entity User {
+  +id : BIGINT <<PK>>
+  first_name : VARCHAR
+  last_name : VARCHAR
+  login : VARCHAR <<NOT NULL, UNIQUE>>
+  email : VARCHAR <<NOT NULL, UNIQUE>>
+  birth_date : DATE
+  password : VARCHAR <<NOT NULL>>
+}
+
+entity Book {
+  +id : BIGINT <<PK>>
+  title : VARCHAR
+  author : VARCHAR
+  isbn : VARCHAR <<NOT NULL, UNIQUE>>
+  page_count : INT <<CHECK (page_count > 0)>>
+  published_date : DATE
+  category_id : BIGINT <<FK>>
+}
+
+entity Category {
+  +id : BIGINT <<PK>>
+  name : VARCHAR <<UNIQUE>>
+}
+
+entity Loan {
+  +id : BIGINT <<PK>>
+  user_id : BIGINT <<FK>>
+  book_id : BIGINT <<FK>>
+  start_date : DATE <<NOT NULL>>
+  return_date : DATE
+}
+
+User ||--o{ Loan : "has"
+Book ||--o{ Loan : "is borrowed in"
+Category ||--o{ Book : "contains"
+
+@enduml
