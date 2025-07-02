@@ -1,4 +1,4 @@
-# Aplikacja "Biblioteka" – Backend (Spring Boot + MySQL)
+# Library App
 
 ## Opis
 Projekt backendowy aplikacji do zarządzania biblioteką, oparty o Spring Boot, Hibernate i MySQL. System obsługuje użytkowników, logowanie, zarządzanie książkami oraz wypożyczenia.
