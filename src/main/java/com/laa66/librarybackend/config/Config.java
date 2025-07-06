@@ -34,7 +34,7 @@ public class Config {
     public LocalSessionFactoryBean sessionFactory() {
         LocalSessionFactoryBean sf = new LocalSessionFactoryBean();
         sf.setDataSource(dataSource());
-        sf.setPackagesToScan("com.example.library.domain.entity"); // <- podaj ścieżkę do encji
+        sf.setPackagesToScan("com.laa66.librarybackend.entity");
         Properties props = new Properties();
         props.put("hibernate.dialect", env.getProperty("spring.jpa.properties.hibernate.dialect"));
         props.put("hibernate.show_sql", env.getProperty("spring.jpa.show-sql"));
