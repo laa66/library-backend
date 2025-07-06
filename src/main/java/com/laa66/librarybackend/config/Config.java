@@ -1,6 +1,11 @@
 package com.laa66.librarybackend.config;
 
 
+import com.laa66.librarybackend.entity.User;
+import com.laa66.librarybackend.persistence.UserPersistence;
+import com.laa66.librarybackend.persistence.UserPersistenceImpl;
+import com.laa66.librarybackend.service.UserService;
+import com.laa66.librarybackend.service.UserServiceImpl;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -45,6 +50,16 @@ public class Config {
     @Bean
     public HibernateTransactionManager transactionManager(SessionFactory sessionFactory) {
         return new HibernateTransactionManager(sessionFactory);
+    }
+
+    @Bean
+    public UserPersistence userPersistence(SessionFactory sessionFactory) {
+        return new UserPersistenceImpl(sessionFactory);
+    }
+
+    @Bean
+    public UserService userService(UserPersistence userPersistence) {
+        return new UserServiceImpl(userPersistence);
     }
 }
 
