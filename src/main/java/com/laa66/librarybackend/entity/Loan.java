@@ -26,8 +26,9 @@ public class Loan {
     @JoinColumn(name = "book_id")
     private Book book;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "start_date")
     private LocalDate startDate;
 
+    @Column(name = "return_date")
     private LocalDate returnDate;
 }

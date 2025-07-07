@@ -1,11 +1,9 @@
 package com.laa66.librarybackend.config;
 
 
-import com.laa66.librarybackend.entity.User;
-import com.laa66.librarybackend.persistence.UserPersistence;
-import com.laa66.librarybackend.persistence.UserPersistenceImpl;
-import com.laa66.librarybackend.service.UserService;
-import com.laa66.librarybackend.service.UserServiceImpl;
+import com.laa66.librarybackend.persistence.*;
+import com.laa66.librarybackend.service.*;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -60,6 +58,36 @@ public class Config {
     @Bean
     public UserService userService(UserPersistence userPersistence) {
         return new UserServiceImpl(userPersistence);
+    }
+
+    @Bean
+    public BookPersistence bookPersistence(SessionFactory sessionFactory) {
+        return new BookPersistenceImpl(sessionFactory);
+    }
+
+    @Bean
+    public BookService bookService(BookPersistence bookPersistence) {
+        return new BookServiceImpl(bookPersistence);
+    }
+
+    @Bean
+    public CategoryPersistence categoryPersistence(SessionFactory sessionFactory) {
+        return new CategoryPersistenceImpl(sessionFactory);
+    }
+
+    @Bean
+    public CategoryService categoryService(CategoryPersistence categoryPersistence) {
+        return new CategoryServiceImpl(categoryPersistence);
+    }
+
+    @Bean
+    public LoanPersistence loanPersistence(SessionFactory sessionFactory) {
+        return new LoanPersistenceImpl(sessionFactory);
+    }
+
+    @Bean
+    public LoanService loanService(LoanPersistence loanPersistence) {
+        return new LoanServiceImpl(loanPersistence);
     }
 }
 

@@ -4,6 +4,8 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "book")
@@ -27,12 +29,17 @@ public class Book {
     @Column(nullable = false, unique = true, length = 20)
     private String isbn;
 
-    @Column(nullable = false)
+    @Column(name = "page_count", nullable = false)
     private int pageCount;
 
+    @Column(name = "published_date")
     private LocalDate publishedDate;
 
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
+
+    @OneToMany(mappedBy = "book", fetch = FetchType.LAZY)
+    private List<Loan> loans = new ArrayList<>();
+
 }
