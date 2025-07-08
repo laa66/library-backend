@@ -1,7 +1,4 @@
 spring:
-  application:
-    name: librarybackend
-
   datasource:
     url: jdbc:mysql://192.168.1.103:3306/library
     username: laa66
@@ -9,8 +6,9 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
-    show-sql: true
     hibernate:
       ddl-auto: validate
+    show-sql: true
     properties:
-      hibernate.dialect: org.hibernate.dialect.MySQL8Dialect
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect

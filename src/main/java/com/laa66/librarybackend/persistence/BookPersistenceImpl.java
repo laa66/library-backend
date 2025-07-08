@@ -1,67 +1,62 @@
 package com.laa66.librarybackend.persistence;
 
 import com.laa66.librarybackend.entity.Book;
-import com.laa66.librarybackend.entity.User;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.Root;
 import lombok.AllArgsConstructor;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
+import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.Root;
+
 import java.util.List;
 import java.util.Optional;
 
+@Repository
 @AllArgsConstructor
 @Transactional
 public class BookPersistenceImpl implements BookPersistence {
 
-    private final SessionFactory sessionFactory;
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Override
     public List<Book> findAll() {
-        Session session = sessionFactory.getCurrentSession();
-        CriteriaBuilder cb = session.getCriteriaBuilder();
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Book> cq = cb.createQuery(Book.class);
         Root<Book> root = cq.from(Book.class);
-        return session.createQuery(cq.select(root)).getResultList();
+        return entityManager.createQuery(cq.select(root)).getResultList();
     }
 
     @Override
     public Optional<Book> findByID(Long id) {
-        Session session = sessionFactory.getCurrentSession();
-        Book book = session.get(Book.class, id);
+        Book book = entityManager.find(Book.class, id);
         return Optional.ofNullable(book);
     }
 
     @Override
     public List<Book> findByCategory(String categoryName) {
-        Session session = sessionFactory.getCurrentSession();
-        CriteriaBuilder cb = session.getCriteriaBuilder();
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Book> cq = cb.createQuery(Book.class);
         Root<Book> bookRoot = cq.from(Book.class);
-
         Join<Object, Object> categoryJoin = bookRoot.join("category");
-
-        return session.createQuery(cq.select(bookRoot)
-                        .where(cb.equal(categoryJoin.get("name"), categoryName)))
-                .getResultList();
+        cq.where(cb.equal(categoryJoin.get("name"), categoryName));
+        return entityManager.createQuery(cq).getResultList();
     }
 
     @Override
     public Book save(Book book) {
-        sessionFactory.getCurrentSession().saveOrUpdate(book);
-        return book;
+        return entityManager.merge(book);
     }
 
     @Override
     public void deleteByID(Long id) {
-        Session session = sessionFactory.getCurrentSession();
-        Optional.ofNullable(session.get(Book.class, id))
-                .ifPresentOrElse(session::delete, () -> {
-                    throw new RuntimeException();
-                }); // TODO: create specific exception
+        Optional.ofNullable(entityManager.find(Book.class, id))
+                .ifPresentOrElse(entityManager::remove, () -> {
+                    throw new RuntimeException("Book not found");
+                });
     }
 }

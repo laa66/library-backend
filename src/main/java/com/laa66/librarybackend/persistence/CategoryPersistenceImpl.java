@@ -1,65 +1,60 @@
 package com.laa66.librarybackend.persistence;
 
-import com.laa66.librarybackend.entity.Book;
 import com.laa66.librarybackend.entity.Category;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
 import lombok.AllArgsConstructor;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
+import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.Root;
+
 import java.util.List;
 import java.util.Optional;
 
+@Repository
 @AllArgsConstructor
 @Transactional
-public class CategoryPersistenceImpl implements CategoryPersistence{
+public class CategoryPersistenceImpl implements CategoryPersistence {
 
-    private final SessionFactory sessionFactory;
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Override
     public List<Category> findAll() {
-        Session session = sessionFactory.getCurrentSession();
-        CriteriaBuilder cb = session.getCriteriaBuilder();
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Category> cq = cb.createQuery(Category.class);
         Root<Category> root = cq.from(Category.class);
-        return session.createQuery(cq.select(root)).getResultList();
+        return entityManager.createQuery(cq.select(root)).getResultList();
     }
 
     @Override
     public Optional<Category> findByID(long id) {
-        Session session = sessionFactory.getCurrentSession();
-        Category category = session.get(Category.class, id);
-        return Optional.ofNullable(category);
+        return Optional.ofNullable(entityManager.find(Category.class, id));
     }
 
     @Override
     public Optional<Category> findByName(String name) {
-        Session session = sessionFactory.getCurrentSession();
-        CriteriaBuilder cb = session.getCriteriaBuilder();
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Category> cq = cb.createQuery(Category.class);
-        Root<Category> categoryRoot = cq.from(Category.class);
-        cq.select(categoryRoot).where(cb.equal(categoryRoot.get("name"), name));
-        List<Category> results = session.createQuery(cq).getResultList();
-        return results.isEmpty() ? Optional.empty() : Optional.of(results.getFirst());
+        Root<Category> root = cq.from(Category.class);
+        cq.select(root).where(cb.equal(root.get("name"), name));
+        List<Category> results = entityManager.createQuery(cq).getResultList();
+        return results.isEmpty() ? Optional.empty() : Optional.of(results.get(0));
     }
 
     @Override
     public Category save(Category category) {
-        sessionFactory.getCurrentSession().saveOrUpdate(category);
-        return category;
+        return entityManager.merge(category);
     }
 
     @Override
     public void deleteByID(long id) {
-        Session session = sessionFactory.getCurrentSession();
-        Optional.ofNullable(session.get(Category.class, id))
-                .ifPresentOrElse(session::delete, () -> {
-                    throw new RuntimeException();
-                }); // TODO: create specific exception
+        Optional<Category> categoryOpt = Optional.ofNullable(entityManager.find(Category.class, id));
+        categoryOpt.ifPresentOrElse(entityManager::remove, () -> {
+            throw new RuntimeException("Category not found");
+        });
     }
 }

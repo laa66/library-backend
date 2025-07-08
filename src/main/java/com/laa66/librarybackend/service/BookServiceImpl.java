@@ -1,6 +1,7 @@
 package com.laa66.librarybackend.service;
 
 import com.laa66.librarybackend.entity.Book;
+import com.laa66.librarybackend.entity.Category;
 import com.laa66.librarybackend.persistence.BookPersistence;
 import lombok.AllArgsConstructor;
 
@@ -11,6 +12,7 @@ import java.util.Optional;
 public class BookServiceImpl implements BookService {
 
     private final BookPersistence bookPersistence;
+    private final CategoryService categoryService;
 
     @Override
     public List<Book> findAll() {
@@ -28,7 +30,10 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public Book save(Book book) {
+    public Book save(Book book, long categoryID) {
+        Category category = categoryService.findByID(categoryID)
+                .orElseThrow(() -> new RuntimeException("category not found")); // TODO: specific exception
+        book.setCategory(category);
         return bookPersistence.save(book);
     }
 

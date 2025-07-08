@@ -1,64 +1,60 @@
 package com.laa66.librarybackend.persistence;
 
-import com.laa66.librarybackend.entity.Category;
 import com.laa66.librarybackend.entity.Loan;
 import lombok.AllArgsConstructor;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
+import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaDelete;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaDelete;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
+
 import java.util.List;
 import java.util.Optional;
 
+@Repository
 @AllArgsConstructor
 @Transactional
 public class LoanPersistenceImpl implements LoanPersistence {
 
-    private final SessionFactory sessionFactory;
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Override
     public List<Loan> findAll() {
-        Session session = sessionFactory.getCurrentSession();
-        CriteriaBuilder cb = session.getCriteriaBuilder();
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Loan> cq = cb.createQuery(Loan.class);
         Root<Loan> root = cq.from(Loan.class);
-        return session.createQuery(cq.select(root)).getResultList();
+        return entityManager.createQuery(cq.select(root)).getResultList();
     }
 
     @Override
     public Optional<Loan> findByID(long id) {
-        Session session = sessionFactory.getCurrentSession();
-        Loan loan = session.get(Loan.class, id);
-        return Optional.ofNullable(loan);
+        return Optional.ofNullable(entityManager.find(Loan.class, id));
     }
 
     @Override
     public Loan create(Loan loan) {
-        sessionFactory.getCurrentSession().saveOrUpdate(loan);
+        entityManager.persist(loan);
         return loan;
     }
 
     @Override
     public void deleteByID(long id) {
-        Session session = sessionFactory.getCurrentSession();
-        Optional.ofNullable(session.get(Loan.class, id))
-                .ifPresentOrElse(session::delete, () -> {
-                    throw new RuntimeException();
-                }); // TODO: create specific exception
+        findByID(id).ifPresentOrElse(entityManager::remove, () -> {
+            throw new RuntimeException("Loan not found with id: " + id);
+        });
     }
 
     @Override
-    public void clearLoans(long id) {
-        Session session = sessionFactory.getCurrentSession();
-        CriteriaBuilder cb = session.getCriteriaBuilder();
-
-        CriteriaDelete<Loan> criteriaDelete = cb.createCriteriaDelete(Loan.class);
-        Root<Loan> root = criteriaDelete.from(Loan.class);
-        criteriaDelete.where(cb.equal(root.get("user").get("id"), id));
-        session.createQuery(criteriaDelete).executeUpdate();
+    public void clearLoans(long userId) {
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaDelete<Loan> delete = cb.createCriteriaDelete(Loan.class);
+        Root<Loan> root = delete.from(Loan.class);
+        delete.where(cb.equal(root.get("user").get("id"), userId));
+        entityManager.createQuery(delete).executeUpdate();
     }
 }

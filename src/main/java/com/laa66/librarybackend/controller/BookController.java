@@ -25,9 +25,9 @@ public class BookController {
         return ResponseEntity.of(bookService.findByID(id));
     }
 
-    @PostMapping
-    public ResponseEntity<Book> createBook(@RequestBody Book book) {
-        Book savedBook = bookService.save(book);
+    @PostMapping("/{category_id}")
+    public ResponseEntity<Book> createBook(@RequestBody Book book, @PathVariable("category_id") long categoryID) {
+        Book savedBook = bookService.save(book, categoryID);
         return ResponseEntity.ok(savedBook);
     }
 

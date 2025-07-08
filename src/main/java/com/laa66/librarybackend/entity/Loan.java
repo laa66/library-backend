@@ -1,8 +1,8 @@
 package com.laa66.librarybackend.entity;
 
+import jakarta.persistence.*;
 import lombok.*;
 
-import javax.persistence.*;
 import java.time.LocalDate;
 
 @Entity
@@ -29,6 +29,10 @@ public class Loan {
     @Column(nullable = false, name = "start_date")
     private LocalDate startDate;
 
-    @Column(name = "return_date")
-    private LocalDate returnDate;
+    @Column(name = "exp_return_date")
+    private LocalDate expReturnDate;
+
+    @Column(name = "actual_return_date")
+    private LocalDate actualReturnDate;
+
 }

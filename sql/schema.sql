@@ -34,7 +34,8 @@ CREATE TABLE `LOAN` (
     user_id BIGINT NOT NULL,
     book_id BIGINT NOT NULL,
     start_date DATE NOT NULL,
-    return_date DATE,
+    exp_return_date DATE,
+    actual_return_date DATE,
     CONSTRAINT fk_loan_user FOREIGN KEY (user_id) REFERENCES user(id),
     CONSTRAINT fk_loan_book FOREIGN KEY (book_id) REFERENCES book(id)
 );

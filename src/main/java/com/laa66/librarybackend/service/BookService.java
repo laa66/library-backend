@@ -9,6 +9,6 @@ public interface BookService {
     List<Book> findAll();
     Optional<Book> findByID(Long id);
     List<Book> findByCategory(String category);
-    Book save(Book book);
+    Book save(Book book, long categoryID);
     void deleteByID(Long id);
 }
