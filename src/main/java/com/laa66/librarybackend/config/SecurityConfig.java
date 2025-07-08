@@ -1,7 +1,9 @@
 package com.laa66.librarybackend.config;
 
+import com.laa66.librarybackend.service.UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -29,6 +31,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/api/user/auth")
                         .permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/user")
+                        .permitAll()
                         .anyRequest()
                         .authenticated()
                 ).build();
@@ -41,24 +45,11 @@ public class SecurityConfig {
 
     @Bean
     public AuthenticationManager authenticationManager(
-            UserDetailsService userDetailsService,
-            PasswordEncoder passwordEncoder) {
+            PasswordEncoder passwordEncoder, UserService userService) {
         DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
-        authenticationProvider.setUserDetailsService(userDetailsService);
+        authenticationProvider.setUserDetailsService(userService);
         authenticationProvider.setPasswordEncoder(passwordEncoder);
-
         return new ProviderManager(authenticationProvider);
-    }
-
-    // TODO: migrate to UserDetailsService
-    @Bean
-    public UserDetailsService userDetailsService() {
-        UserDetails user = User.withUsername("user")
-                .password(passwordEncoder().encode("password"))
-                .roles("USER")
-                .build();
-
-        return new InMemoryUserDetailsManager(user);
     }
 
     @Bean

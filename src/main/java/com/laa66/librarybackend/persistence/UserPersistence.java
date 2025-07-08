@@ -10,4 +10,5 @@ public interface UserPersistence {
     Optional<User> findByID(long id);
     void deleteByID(long id);
     User save(User user);
+    Optional<User> findByEmail(String email);
 }

@@ -5,13 +5,14 @@ import com.laa66.librarybackend.persistence.*;
 import com.laa66.librarybackend.service.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
 public class Config {
 
     @Bean
-    public UserService userService(UserPersistence userPersistence) {
-        return new UserServiceImpl(userPersistence);
+    public UserService userService(UserPersistence userPersistence, PasswordEncoder passwordEncoder) {
+        return new UserServiceImpl(userPersistence, passwordEncoder);
     }
 
     @Bean

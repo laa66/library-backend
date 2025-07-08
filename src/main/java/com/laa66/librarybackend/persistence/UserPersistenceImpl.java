@@ -1,6 +1,7 @@
 package com.laa66.librarybackend.persistence;
 
 import com.laa66.librarybackend.entity.User;
+import jakarta.persistence.TypedQuery;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,5 +51,13 @@ public class UserPersistenceImpl implements UserPersistence {
             user = entityManager.merge(user);
         }
         return user;
+    }
+
+    @Override
+    public Optional<User> findByEmail(String email) {
+        String jpql = "SELECT u FROM User u WHERE u.email = :email";
+        TypedQuery<User> query = entityManager.createQuery(jpql, User.class);
+        query.setParameter("email", email);
+        return query.getResultStream().findFirst();
     }
 }

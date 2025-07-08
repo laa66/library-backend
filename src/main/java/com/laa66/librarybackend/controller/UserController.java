@@ -26,7 +26,6 @@ public class UserController {
     private final AuthenticationManager authenticationManager;
     private final SecurityContextRepository securityContextRepository;
 
-    // TODO: extract authentication logic to service
     @PostMapping("/auth")
     public ResponseEntity<String> login(@RequestBody PasswordAuthenticateDTO passwordAuthenticateDTO,
                                         HttpServletRequest request,
