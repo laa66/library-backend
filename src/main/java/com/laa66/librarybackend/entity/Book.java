@@ -1,5 +1,6 @@
 package com.laa66.librarybackend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -39,6 +40,7 @@ public class Book {
     @JoinColumn(name = "category_id")
     private Category category;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "book", fetch = FetchType.LAZY)
     private List<Loan> loans = new ArrayList<>();
 

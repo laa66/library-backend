@@ -1,9 +1,18 @@
 package com.laa66.librarybackend.controller;
 
+import com.laa66.librarybackend.dto.PasswordAuthenticateDTO;
 import com.laa66.librarybackend.entity.User;
 import com.laa66.librarybackend.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,6 +23,24 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
+    private final AuthenticationManager authenticationManager;
+    private final SecurityContextRepository securityContextRepository;
+
+    // TODO: extract authentication logic to service
+    @PostMapping("/auth")
+    public ResponseEntity<String> login(@RequestBody PasswordAuthenticateDTO passwordAuthenticateDTO,
+                                        HttpServletRequest request,
+                                        HttpServletResponse response) {
+        Authentication auth = UsernamePasswordAuthenticationToken.unauthenticated(passwordAuthenticateDTO.username(), passwordAuthenticateDTO.password());
+        Authentication authRes = authenticationManager.authenticate(auth);
+
+        SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
+        securityContext.setAuthentication(authRes);
+        SecurityContextHolder.setContext(securityContext);
+        securityContextRepository.saveContext(securityContext, request, response);
+
+        return ResponseEntity.ok("Login success!");
+    }
 
     @GetMapping
     public ResponseEntity<List<User>> getAllUsers() {

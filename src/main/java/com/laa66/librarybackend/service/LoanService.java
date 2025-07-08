@@ -8,7 +8,8 @@ import java.util.Optional;
 public interface LoanService {
     List<Loan> findAll();
     Optional<Loan> findByID(long id);
-    Loan create(long userId, Loan loan);
+    List<Loan> findByUserID(long userId);
+    Loan create(long userId, long bookId);
     void deleteByID(long id);
     void clearLoans(long id);
 }

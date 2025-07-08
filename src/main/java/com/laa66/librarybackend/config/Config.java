@@ -25,8 +25,8 @@ public class Config {
     }
 
     @Bean
-    public LoanService loanService(LoanPersistence loanPersistence, UserService userService) {
-        return new LoanServiceImpl(loanPersistence, userService);
+    public LoanService loanService(LoanPersistence loanPersistence, UserService userService, BookService bookService) {
+        return new LoanServiceImpl(loanPersistence, userService, bookService);
     }
 }
 

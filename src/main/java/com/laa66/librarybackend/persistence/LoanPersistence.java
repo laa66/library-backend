@@ -11,4 +11,5 @@ public interface LoanPersistence {
     Loan create(Loan loan);
     void deleteByID(long id);
     void clearLoans(long id);
+    List<Loan> findByUserID(long userId);
 }

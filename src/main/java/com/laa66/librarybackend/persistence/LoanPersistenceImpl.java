@@ -57,4 +57,12 @@ public class LoanPersistenceImpl implements LoanPersistence {
         delete.where(cb.equal(root.get("user").get("id"), userId));
         entityManager.createQuery(delete).executeUpdate();
     }
+
+    @Override
+    public List<Loan> findByUserID(long userId) {
+        return entityManager.createQuery(
+                        "SELECT l FROM Loan l WHERE l.user.id = :user_id", Loan.class)
+                .setParameter("user_id", userId)
+                .getResultList();
+    }
 }

@@ -25,9 +25,14 @@ public class LoanController {
         return ResponseEntity.of(loanService.findByID(id));
     }
 
-    @PostMapping("/{id}")
-    public ResponseEntity<Loan> createLoan(@PathVariable("id") long userId, @RequestBody Loan loan) {
-        Loan createdLoan = loanService.create(userId, loan);
+    @GetMapping("/user/{user_id}")
+    public ResponseEntity<List<Loan>> getUserLoans(@PathVariable("user_id") long userId) {
+        return ResponseEntity.ok(loanService.findByUserID(userId));
+    }
+
+    @PostMapping("/user/{user_id}/book/{book_id}")
+    public ResponseEntity<Loan> createLoan(@PathVariable("user_id") long userId, @PathVariable("book_id") long bookId) {
+        Loan createdLoan = loanService.create(userId, bookId);
         return ResponseEntity.ok(createdLoan);
     }
 
@@ -37,8 +42,8 @@ public class LoanController {
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping
-    public ResponseEntity<Void> clearLoans(@PathVariable long userId) {
+    @DeleteMapping("/user/{user_id}")
+    public ResponseEntity<Void> clearLoans(@PathVariable("user_id") long userId) {
         loanService.clearLoans(userId);
         return ResponseEntity.noContent().build();
     }

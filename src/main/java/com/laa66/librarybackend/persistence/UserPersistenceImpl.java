@@ -44,7 +44,7 @@ public class UserPersistenceImpl implements UserPersistence {
 
     @Override
     public User save(User user) {
-        if (user.getId() == 0) {
+        if (user.getId() == null) {
             entityManager.persist(user);
         } else {
             user = entityManager.merge(user);
